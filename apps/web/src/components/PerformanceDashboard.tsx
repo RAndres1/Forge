@@ -13,11 +13,6 @@ interface MetricState {
 }
 
 export function PerformanceDashboard() {
-  // ONLY RENDER IN DEVELOPMENT MODE
-  if (process.env.NODE_ENV === 'production') {
-    return null;
-  }
-
   const [metrics, setMetrics] = useState<MetricState>({
     fps: 60,
     memoryMb: null,
@@ -31,7 +26,8 @@ export function PerformanceDashboard() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // 1. FPS COUNTER
+    if (process.env.NODE_ENV === 'production') return;
+
     let frameCount = 0;
     let lastTime = performance.now();
     let animId: number;
@@ -50,7 +46,6 @@ export function PerformanceDashboard() {
 
     animId = requestAnimationFrame(calcFps);
 
-    // 2. MEMORY TELEMETRY
     const checkMemory = () => {
       if ('memory' in performance) {
         const mem = (performance as unknown as { memory: { usedJSHeapSize: number } }).memory;
@@ -61,7 +56,6 @@ export function PerformanceDashboard() {
     checkMemory();
     const memInterval = setInterval(checkMemory, 3000);
 
-    // 3. NAVIGATION TIMING
     const navEntries = performance.getEntriesByType('navigation');
     if (navEntries.length > 0) {
       const nav = navEntries[0] as PerformanceNavigationTiming;
@@ -69,7 +63,6 @@ export function PerformanceDashboard() {
       setMetrics((prev) => ({ ...prev, navigationMs: navTime }));
     }
 
-    // 4. WEB VITALS OBSERVER
     if (typeof PerformanceObserver !== 'undefined') {
       try {
         const lcpObserver = new PerformanceObserver((entryList) => {
@@ -92,7 +85,7 @@ export function PerformanceDashboard() {
         });
         clsObserver.observe({ type: 'layout-shift', buffered: true });
       } catch {
-        // Fallback for unsupported browsers
+        // Fallback
       }
     }
 
@@ -101,6 +94,10 @@ export function PerformanceDashboard() {
       clearInterval(memInterval);
     };
   }, []);
+
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
 
   return (
     <aside className="fixed bottom-4 right-4 z-[9999] font-mono text-[11px] select-none">

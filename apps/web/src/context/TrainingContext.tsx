@@ -58,44 +58,35 @@ interface TrainingContextType {
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
 export const TrainingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const storage = new LocalStorageAdapter();
+  const [userXp, setUserXp] = useState<number>(0);
+  const [totalMonthlyVolume, setTotalMonthlyVolume] = useState<number>(0);
+  const [evidences, setEvidences] = useState<EvidenceItem[]>([]);
+  const [routines, setRoutines] = useState<CustomRoutine[]>([]);
+  const [athleteName, setAthleteNameState] = useState<string>('');
+  const [athleteId, setAthleteIdState] = useState<string>('ath_default');
+  const [bodyWeightKg, setBodyWeightKgState] = useState<number>(75);
+  const [activeRecoverySession, setActiveRecoverySessionState] = useState<ActiveSessionRecovery | null>(null);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  const [userXp, setUserXp] = useState<number>(() => {
-    return storage.getItem<number>('forge_passport_xp') ?? 0;
-  });
+  // HYDRATE FROM LOCAL STORAGE ON MOUNT
+  useEffect(() => {
+    const storage = new LocalStorageAdapter();
+    setUserXp(storage.getItem<number>('forge_passport_xp') ?? 0);
+    setTotalMonthlyVolume(storage.getItem<number>('forge_passport_volume') ?? 0);
+    setEvidences(storage.getItem<EvidenceItem[]>('forge_evidences') ?? []);
+    setRoutines(storage.getItem<CustomRoutine[]>('forge_custom_routines') ?? []);
+    setAthleteNameState(storage.getItem<string>('forge_athlete_name') ?? '');
+    setBodyWeightKgState(storage.getItem<number>('forge_body_weight') ?? 75);
+    setActiveRecoverySessionState(storage.getItem<ActiveSessionRecovery>('forge_active_workout_session'));
 
-  const [totalMonthlyVolume, setTotalMonthlyVolume] = useState<number>(() => {
-    return storage.getItem<number>('forge_passport_volume') ?? 0;
-  });
-
-  const [evidences, setEvidences] = useState<EvidenceItem[]>(() => {
-    return storage.getItem<EvidenceItem[]>('forge_evidences') ?? [];
-  });
-
-  const [routines, setRoutines] = useState<CustomRoutine[]>(() => {
-    return storage.getItem<CustomRoutine[]>('forge_custom_routines') ?? [];
-  });
-
-  const [athleteName, setAthleteNameState] = useState<string>(() => {
-    return storage.getItem<string>('forge_athlete_name') ?? '';
-  });
-
-  const [athleteId] = useState<string>(() => {
     let existingId = storage.getItem<string>('forge_athlete_id');
     if (!existingId) {
       existingId = `ath_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       storage.setItem('forge_athlete_id', existingId);
     }
-    return existingId;
-  });
-
-  const [bodyWeightKg, setBodyWeightKgState] = useState<number>(() => {
-    return storage.getItem<number>('forge_body_weight') ?? 75;
-  });
-
-  const [activeRecoverySession, setActiveRecoverySessionState] = useState<ActiveSessionRecovery | null>(() => {
-    return storage.getItem<ActiveSessionRecovery>('forge_active_workout_session');
-  });
+    setAthleteIdState(existingId);
+    setIsMounted(true);
+  }, []);
 
   const isPassportInitialized = Boolean(athleteName && athleteName.trim().length > 0);
 
@@ -107,16 +98,19 @@ export const TrainingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [athleteId, evidences]);
 
   const setAthleteName = (name: string) => {
+    const storage = new LocalStorageAdapter();
     setAthleteNameState(name);
     storage.setItem('forge_athlete_name', name);
   };
 
   const setBodyWeightKg = (bw: number) => {
+    const storage = new LocalStorageAdapter();
     setBodyWeightKgState(bw);
     storage.setItem('forge_body_weight', bw);
   };
 
   const saveRoutine = (routine: CustomRoutine) => {
+    const storage = new LocalStorageAdapter();
     setRoutines((prev) => {
       const idx = prev.findIndex((r) => r.id === routine.id);
       let updated: CustomRoutine[];
@@ -132,6 +126,7 @@ export const TrainingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const deleteRoutine = (id: string) => {
+    const storage = new LocalStorageAdapter();
     setRoutines((prev) => {
       const updated = prev.filter((r) => r.id !== id);
       storage.setItem('forge_custom_routines', updated);
@@ -140,6 +135,7 @@ export const TrainingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const saveActiveSessionRecovery = (session: ActiveSessionRecovery | null) => {
+    const storage = new LocalStorageAdapter();
     setActiveRecoverySessionState(session);
     if (session) {
       storage.setItem('forge_active_workout_session', session);
@@ -149,28 +145,37 @@ export const TrainingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const clearActiveRecoverySession = () => {
+    const storage = new LocalStorageAdapter();
     setActiveRecoverySessionState(null);
     storage.removeItem('forge_active_workout_session');
   };
 
   const rankInfo = getRankProgress(userXp);
 
-  // PERSIST TO LOCALSTORAGE VIA ADAPTER
+  // PERSIST CHANGES TO LOCALSTORAGE
   useEffect(() => {
+    if (!isMounted) return;
+    const storage = new LocalStorageAdapter();
     storage.setItem('forge_passport_xp', userXp);
-  }, [userXp]);
+  }, [userXp, isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
+    const storage = new LocalStorageAdapter();
     storage.setItem('forge_passport_volume', totalMonthlyVolume);
-  }, [totalMonthlyVolume]);
+  }, [totalMonthlyVolume, isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
+    const storage = new LocalStorageAdapter();
     storage.setItem('forge_evidences', evidences);
-  }, [evidences]);
+  }, [evidences, isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
+    const storage = new LocalStorageAdapter();
     storage.setItem('forge_athlete_knowledge', athleteKnowledge);
-  }, [athleteKnowledge]);
+  }, [athleteKnowledge, isMounted]);
 
   // SUBSCRIBE EVENT BUS LISTENERS
   useEffect(() => {

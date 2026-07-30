@@ -4,10 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { DecisionHistoryEngine } from '@forge/domain';
 
 export function DecisionTelemetryDashboard() {
-  if (process.env.NODE_ENV === 'production') {
-    return null;
-  }
-
   const [metrics, setMetrics] = useState<ReturnType<typeof DecisionHistoryEngine.prototype.getMetrics>>({
     totalIssued: 0,
     totalAccepted: 0,
@@ -22,6 +18,8 @@ export function DecisionTelemetryDashboard() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    if (process.env.NODE_ENV === 'production') return;
+
     const updateMetrics = () => {
       const history = DecisionHistoryEngine.getInstance();
       setMetrics(history.getMetrics());
@@ -31,6 +29,10 @@ export function DecisionTelemetryDashboard() {
     const interval = setInterval(updateMetrics, 2000);
     return () => clearInterval(interval);
   }, []);
+
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
 
   return (
     <aside className="fixed bottom-4 left-4 z-[9999] font-mono text-[11px] select-none">

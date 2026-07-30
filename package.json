@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "npm@10.0.0",
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "scripts": {
@@ -11,8 +11,5 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "test": "turbo test"
-  },
-  "dependencies": {
-    "expo": "^57.0.8"
   }
 }
