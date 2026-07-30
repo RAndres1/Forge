@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info:
+  title: Forge API
+  version: 0.1.0
+servers:
+  - url: https://api.forge.app/v1
+paths:
+  /passport:
+    get:
+      summary: Get projected passport
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Passport'
+  /workouts:
+    post:
+      summary: Create workout
+      requestBody:
+        required: true
+      responses:
+        '201':
+          description: Created
+components:
+  schemas:
+    Passport:
+      type: object
+      required: [rank,momentum,legacy]
+      properties:
+        rank:
+          type: string
+        momentum:
+          type: integer
+        legacy:
+          type: integer

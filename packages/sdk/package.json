@@ -1,0 +1,13 @@
+{
+  "name": "@forge/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@forge/domain": "file:../domain",
+    "@supabase/supabase-js": "^2.43.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

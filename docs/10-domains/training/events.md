@@ -1,0 +1,16 @@
+# Eventos
+
+WorkoutStarted
+WorkoutPaused
+WorkoutResumed
+WorkoutCompleted
+ExerciseAdded
+ExerciseRemoved
+SetCreated
+SetEdited
+SetDeleted
+RestStarted
+RestFinished
+WorkoutRecovered
+WorkoutSynced
+WorkoutArchived

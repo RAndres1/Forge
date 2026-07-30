@@ -1,0 +1,2 @@
+# Domain
+Shared business logic.

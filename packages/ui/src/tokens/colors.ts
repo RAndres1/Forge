@@ -1,0 +1,15 @@
+export const forgeColors = {
+  void: '#030305',
+  surfaceDark: 'rgba(12, 12, 16, 0.65)',
+  surfaceGlass: 'rgba(24, 24, 27, 0.5)',
+  borderHairline: 'rgba(255, 255, 255, 0.07)',
+  borderSubtle: 'rgba(255, 255, 255, 0.12)',
+  accentCyan: '#00f0ff',
+  accentEmerald: '#00ff9d',
+  accentAmber: '#ffaa00',
+  accentCrimson: '#ff0055',
+  accentViolet: '#7000ff',
+  textPrimary: '#ffffff',
+  textSecondary: '#a1a1aa',
+  textMuted: '#52525b',
+};
