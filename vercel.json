@@ -1,5 +1,4 @@
 {
-  "installCommand": "pnpm install --filter=@forge/web... --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter=@forge/web build",
+  "buildCommand": "npx turbo run build --filter=@forge/web...",
   "framework": "nextjs"
 }
