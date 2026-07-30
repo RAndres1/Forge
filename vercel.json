@@ -1,8 +1,5 @@
 {
-  "services": {
-    "web": {
-      "root": "apps/web",
-      "framework": "nextjs"
-    }
-  }
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm --filter=@forge/web build",
+  "framework": "nextjs"
 }
