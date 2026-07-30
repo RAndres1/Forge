@@ -1,4 +1,5 @@
 {
+  "installCommand": "pnpm install --filter=@forge/web... --no-frozen-lockfile",
   "buildCommand": "pnpm --filter=@forge/web build",
   "framework": "nextjs"
 }
